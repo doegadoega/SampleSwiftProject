@@ -22,7 +22,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Goto Login VC"/>
                                 <connections>
-                                    <action selector="gotoLoginVC:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bdO-sZ-JUv"/>
+                                    <action selector="gotoLoginVC:" destination="BYZ-38-t0r" eventType="touchUpInside" id="gFw-7I-XvX"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -30,12 +30,12 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <connections>
-                        <segue destination="jyj-6b-Swm" kind="presentation" identifier="showLogin" id="p9L-pt-eeq"/>
+                        <segue destination="jyj-6b-Swm" kind="presentation" identifier="showLogin" id="h9L-q2-ZLJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="130.53435114503816" y="-34.507042253521128"/>
+            <point key="canvasLocation" x="-85" y="-51"/>
         </scene>
         <!--Login-->
         <scene sceneID="HH3-LC-qdM">
@@ -43,7 +43,7 @@
                 <viewControllerPlaceholder storyboardName="Login" id="jyj-6b-Swm" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Is3-t6-xkf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="732" y="-87"/>
+            <point key="canvasLocation" x="575" y="-129"/>
         </scene>
     </scenes>
     <resources>

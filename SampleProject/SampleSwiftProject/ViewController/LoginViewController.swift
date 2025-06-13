@@ -7,7 +7,12 @@
 
 import UIKit
 
+/// ログインを想定した画面
 class LoginViewController: UIViewController {
+    /// タイトルを定義
+    var titleString: String? = nil
+    var descripotionString: String? = nil
+    
     /// ログインタイトル
     @IBOutlet private weak var loginTitleLabel: UILabel! {
         didSet {
@@ -37,8 +42,10 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-
+        if let string = self.titleString {
+            debugPrint("titleString = \(string)")
+            self.titleString = "Loginからきたよ。"
+        }
     }
-    
-    
+
 }

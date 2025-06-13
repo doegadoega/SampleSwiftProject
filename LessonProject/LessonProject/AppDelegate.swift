@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  SampleSwiftProject
+//  LessonProject
 //
-//  Created by Hiroshi Egami on 2025/05/31.
+//  Created by Hiroshi Egami on 2025/06/13.
 //
 
 import UIKit
