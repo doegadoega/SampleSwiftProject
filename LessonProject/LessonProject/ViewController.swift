@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         
         guard let url = URL(string: urlString)
         else {
-            debugPrint(" Url is Nil! ")
+            debugPrint(" URL is nil! ")
             return
         }
         
@@ -44,12 +44,12 @@ class ViewController: UIViewController {
 
             debugPrint(response.description)
             if response.statusCode == 200 {
-                // Lession1は完了
+                // Lesson1は完了
                 debugPrint("通信成功！")
                 
                 // 文字列を取得
                 if let string = String(data: data, encoding: .utf8) {
-                    // Lession2は完了?
+                    // Lesson2は完了?
                     debugPrint(string)
                 }
             } else {
