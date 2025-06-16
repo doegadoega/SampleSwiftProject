@@ -51,11 +51,24 @@ class ViewController: UIViewController {
                 if let string = String(data: data, encoding: .utf8) {
                     // Lesson2は完了?
                     debugPrint(string)
+                    
+                    // Lesson3完了
+                    // UserDefaultsに文字列を保存する処理
+                    if UserDefaultsKeyType.gourmetAPI.setStringValue(string: string) {
+                        // Lesson4完了
+                        if let gourmetAPIString = UserDefaultsKeyType.gourmetAPI.getStringValue() {
+                            debugPrint("=====================")
+                            debugPrint(gourmetAPIString)
+                            debugPrint("--------------------")
+                        }
+                    } else {
+                        debugPrint("UserDefaultからの読み出しに失敗")
+                    }
+
                 }
             } else {
                 debugPrint("通信失敗")
             }
-            
         }
         task.resume()
     }
