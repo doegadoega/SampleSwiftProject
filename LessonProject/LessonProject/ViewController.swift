@@ -11,13 +11,25 @@ class ViewController: UIViewController {
     
     var model: [String: Any]?
     var errorType: ErrorType?
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
         Task {
             do {
                 self.model = try await self.getGourmetAPI()
+                if let model = self.model,
+                    let results = model["results"] as? [String: Any],
+                   let shops = results["shop"] as? [[String: Any]],
+                   let shop = shops.first {
+                    // Lesson6 完了
+                    debugPrint(shop["logo_image"] ?? "ロゴないよー")
+                    
+                    // Lesson7
+                    try await self.saveShopImage(shop: shop)
+                } else {
+                    debugPrint("modelの取得に失敗")
+                }
             }
             catch let error as ErrorType {
                 self.errorType = error
@@ -27,7 +39,7 @@ class ViewController: UIViewController {
             }
         }
     }
-    
+
     /// 課題：iOSSDKを使って通信モジュールを作ってみる。
     /// ホットペッパーグルメのグルメサーチAPIから情報を取得するs
     private func getGourmetAPI() async throws -> [String: Any] {
@@ -43,7 +55,7 @@ class ViewController: UIViewController {
         
         let request = URLRequest(url: url)
         let task = try await URLSession.shared.data(for: request)
-                
+        
         guard let response = task.1 as? HTTPURLResponse
         else {
             throw ErrorType.unknow
@@ -67,21 +79,17 @@ class ViewController: UIViewController {
                 else {
                     throw ErrorType.unknow
                 }
-                debugPrint("=====================")
-                debugPrint(gourmetAPIString)
-                debugPrint("--------------------")
                 
                 let result = self.convertToDictionary(gourmetAPIString: gourmetAPIString)
                 switch result {
                 case let .success(dictionary):
-                    debugPrint(dictionary)
                     return dictionary
                 case let .failure(error):
                     debugPrint(error.localizedDescription)
                     throw error
                 }
             } else {
-                debugPrint("UserDefaultに該当する内容はありません")
+                throw ErrorType.unknow
             }
         case 400..<500: // Http通信エラー
             throw ErrorType.httpError(response.statusCode)
@@ -90,8 +98,6 @@ class ViewController: UIViewController {
         default:
             throw ErrorType.unknow
         }
-
-        return [String: Any]()
     }
         
     /// Lesson5 完了
@@ -129,6 +135,51 @@ class ViewController: UIViewController {
         } catch {
             debugPrint(error.localizedDescription)
             return Result.failure(ErrorType.jsonDecodingError)
+        }
+    }
+    
+    /// ショップの画像を保存します
+    private func saveShopImage(shop: [String: Any]?) async throws {
+        guard let shop = shop,
+              let imageURLString = shop["logo_image"] as? String,
+              let imageURL = URL(string: imageURLString)
+        else {
+            throw ErrorType.parameterError
+        }
+        
+        let task = try await URLSession.shared.data(for: URLRequest(url: imageURL))
+        
+        guard let response = task.1 as? HTTPURLResponse
+        else {
+            throw ErrorType.unknow
+        }
+        
+        let data = task.0
+        
+        debugPrint(response.description)
+        switch response.statusCode {
+        case 200..<400:
+            debugPrint("HTTP Status Code: 2xx")
+            // 文字列を取得
+            let image = UIImage(data: data)
+            do {
+                let tmpDictory = NSHomeDirectory() + "/tmp"
+                
+                let filePath = tmpDictory + "/\(UUID()).png"
+                debugPrint(filePath)
+                
+                // Lesson8
+                let fileURL = URL(filePath: filePath)
+                try data.write(to: fileURL, options: .atomic)
+            } catch {
+                throw ErrorType.systemError(error)
+            }
+        case 400..<500: // Http通信エラー
+            throw ErrorType.httpError(response.statusCode)
+        case 500..<600: // メンテナンスエラー
+            throw ErrorType.serverError(response.statusCode)
+        default:
+            throw ErrorType.unknow
         }
     }
 }
