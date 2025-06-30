@@ -8,6 +8,12 @@
 import UIKit
 
 class ViewController: UIViewController {
+    /// お店のロゴを表示
+    @IBOutlet private weak var imageView: UIImageView!
+    /// お店の名前を表示
+    @IBOutlet private weak var shopNameLabel: UILabel!
+    /// お店の住所を表示
+    @IBOutlet private weak var addressLabel: UILabel!
     
     var model: [String: Any]?
     var errorType: ErrorType?
@@ -27,6 +33,16 @@ class ViewController: UIViewController {
                     
                     // Lesson7
                     try await self.saveShopImage(shop: shop)
+                    
+                    // Lesson9 完了
+                    let result = await self.retainShopImage(shop: shop)
+                    let image = try result.get()
+                    
+                    // Lesson10, 11完了
+                    self.imageView.image = image
+                    self.shopNameLabel.text = shop["name"] as? String ?? "ショップ名なし"
+                    self.addressLabel.text = shop["address"] as? String ?? "住所なし"
+                    
                 } else {
                     debugPrint("modelの取得に失敗")
                 }
@@ -160,16 +176,15 @@ class ViewController: UIViewController {
         switch response.statusCode {
         case 200..<400:
             debugPrint("HTTP Status Code: 2xx")
-            // 文字列を取得
-            let image = UIImage(data: data)
             do {
-                let tmpDictory = NSHomeDirectory() + "/tmp"
-                
-                let filePath = tmpDictory + "/\(UUID()).png"
-                debugPrint(filePath)
+                // イメージファイルを取得し、その存在もチェック
+                guard let fileName = imageURLString.base64Encoded,
+                      let fileURL = fileName.temporaryDirectoryImageFileURL
+                else {
+                    return
+                }
                 
                 // Lesson8
-                let fileURL = URL(filePath: filePath)
                 try data.write(to: fileURL, options: .atomic)
             } catch {
                 throw ErrorType.systemError(error)
@@ -182,5 +197,31 @@ class ViewController: UIViewController {
             throw ErrorType.unknow
         }
     }
+    
+    /// ショップの画像を再取得
+    private func retainShopImage(shop: [String: Any]?) async -> Result<UIImage, ErrorType> {
+        
+        guard let shop = shop,
+              let imageURLString = shop["logo_image"] as? String,
+             let imageBase64Encoded = imageURLString.base64Encoded,
+              let imageFileURL = imageBase64Encoded.temporaryDirectoryImageFileURL
+        else {
+            return .failure(ErrorType.parameterError)
+        }
+        
+        do {
+            // Lesson9
+            let imageData = try Data(contentsOf: imageFileURL)
+            // 画像データが存在しない場合
+            guard let image = UIImage(data: imageData)
+            else {
+                return .failure(ErrorType.unknow)
+            }
+            
+            return .success(image)
+        }
+        catch {
+            return .failure(ErrorType.systemError(error))
+        }
+    }
 }
-
